@@ -1,0 +1,515 @@
+---
+title: "`r params$dist_name` CAASPP 2022 Private Preview Report"
+output:
+  pdf_document: null
+  html_document:
+    df_print: paged
+  word_document: default
+header-includes:
+- \renewcommand{\familydefault}{\sfdefault}
+- \usepackage{fancyhdr}
+- \usepackage{comment}
+- \usepackage{titling}
+- \pretitle{\begin{center}\Huge\includegraphics[width=4cm]{logo.jpg}\\[\bigskipamount]}
+- \posttitle{\end{center}}
+- \pagestyle{fancy}
+- \fancyfoot[LO,LE]{Riverside County Office of Education}
+- \fancyfoot[CO,CE]{`r format(Sys.time(), "%m/%d/%Y")`}
+- \fancyfoot[RO,RE]{\thepage}
+- \fancyhead[RO,RE]{`r params$dist_name` CAASPP 2022 Private Preview Report}
+- \fancyhead[LO,LE]{}
+classoption: landscape
+urlcolor: blue
+params:
+  cds: "33000000000000"
+  dist_name: "Riverside County"
+  include_others: TRUE
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,fig.width=9, fig.height=6.5, dpi=300)
+load('caaspp_long.RData')
+load('caaspp_dfs.RData')
+load('cut_scores.RData')
+load('plot_caaspp.Rdata')
+load('plot_dfs.Rdata')
+load('plot_5x5.Rdata')
+load('race_ethnicity.Rdata')
+load('program.Rdata')
+
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+library(ggrepel)
+
+
+
+```
+
+```{r title_page, out.height = "200px"}
+
+```
+
+```{=tex}
+\begin{center}
+
+
+
+\LARGE
+Prepared by the Riverside County Office of Education
+
+This report is based upon embargoed data, and should not be shared publicly.
+
+`r format(Sys.time(), "%m/%d/%Y")`
+\end{center}
+```
+\newpage
+\small
+
+# California Assessment of Student Performance and Progress (CAASPP)
+
+The CAASPP System was established on January 1, 2014. The primary purpose of the CAASPP System is to assist teachers, administrators, students, and parents by promoting high-quality teaching and learning through the use of a variety of assessment approaches and item types. The CAASPP System encompasses the following assessments and student participation requirements.
+
+-   Smarter Balanced English language arts/literacy (ELA) and mathematics summative assessments in grades three through eight and eleven.
+-   CA Science Test in grades five and eight and once in high school (i.e., grade ten, eleven, or twelve).
+-   California Alternate Assessments (CAAs) for ELA, mathematics, and science replaced the California Alternate Performance Assessment (CAPA) for ELA and CAPA for mathematics, which were eliminated in 2015. Only eligible students may participate in the administration of the CAAs.
+-   CA Spanish Assessment (CSA) for reading/language arts in grades three through eight and eleven (optional).
+
+Over a decade ago, California adopted more rigorous academic standards that emphasize not only subject knowledge, but also the critical thinking, analytical writing, and problem-solving skills students need to be successful in college and career. These standards set a higher bar for California students to help ensure they are prepared to succeed in the future. Because what students need to know and be able to do has changed, our tests must change as well. California's new assessment system represents the next step in a comprehensive plan to promote high-quality teaching and learning and improve student outcomes. This plan recognizes that assessments can play an important role in promoting and modeling high-quality instruction.
+
+The Smarter Balanced assessments are computer based tests that measure student knowledge of California's ELA/literacy and mathematics standards. These assessments replace the former paper-based, multiple-choice assessments for students in grades three through eight and grade eleven. The first statewide administration of these assessments took place in spring 2015. This report includes results from six administrations of the Smarter Balanced assessments in ELA and mathematics beginning in 2015 through 2022 with no results reported in 2020 and 2021. Testing was suspended in 2020 due to the COVID-19 pandemic resulting in school closures in spring 2020 through most of the 2020-2021 school year. In spring 2021, districts were given the option to administer the Smarter Balanced assessments or utilize local assessments that met specific criteria adopted by the CA State Board of Education. In spring 2022, school districts were required to administer the Smarter Balanced assessments for the first time since 2019.
+
+The Smarter Balanced assessment system uses both computer-based and computer-adaptive tests, providing students with a wider range of questions tailored to more accurately identify the knowledge and skills individual students have mastered. The tests include performance tasks that challenge students to demonstrate critical thinking and problem-solving, and to apply their knowledge and skills to real-world problems. The new computer-based tests include supports for English learners and students with special needs, allowing these students the ability to effectively demonstrate their knowledge and skills. The tests measure standards that our K--12 and higher education systems all agree address appropriate expectations for the preparation of high school graduates who are ready for success.
+
+(Source: [CDE CAASPP System](http://www.cde.ca.gov/ta/tg/ca), [CAASPP Description](http://www.cde.ca.gov/ta/tg/ai/cefcaaspp.asp))
+
+\newpage
+
+## Description of Contents
+
+This report contains **private preview** Smarter Balanced Assessment results in English Language Arts (ELA) and Mathematics from the Spring 2022 test administration. The summary reports include data for students who tested in your district and whose tests were scored as of July 5, 2022. Please keep in mind that until the statewide public release, aggregate results are incomplete and may not reflect all students. **Please do not share results from this preview with the public except for purposes of local planning, such as with the local governing board**. Please contact the CAASPP Office at the CA Department of Education by email at [caaspp\@cde.ca.gov](mailto:caaspp@cde.ca.gov){.email} by 4 p.m. on August 31, 2022, if you have any questions and to report any discrepancies in district or school reports that are available on the CAASPP Private Preview website that is accessible by each districts' CAASPP Coordinator.
+
+### Section 1: Riverside County 2022 Smarter Balanced Achievement Levels by Grade and Student Group
+
+On the Smarter Balanced Summative Assessment, individual students receive a scale score for English Language Arts (ELA)/Literacy and Mathematics. A scale score is the student's overall numerical score. These scores fall on a continuous scale from approximately 2000 to 3000 that increases across grade levels. Scale scores can be used to illustrate students' current level of achievement and their growth over time. When combined together across a student population, scale scores can also describe school- and district-level changes in performance, as well as reveal gaps in achievement among different groups of students. In 2020-2021 the Smarter Balanced Assessments and Test Blueprints were revised to create a "short-form" version of the test that was able to be administered remotely in distance-learning settings. The short-form version and remote administration options were available for optional spring 2021 test administration and were used for spring 2022 test administration. (Source: [Smarter Balanced Assessment Consortium](http://www.smarterbalanced.org/assessments/scores/), [Federal Approval for Assessment Flexibility Announcement](https://www.cde.ca.gov/nr/ne/yr20/yr20rel90.asp)).
+
+Based on their scale scores, students fall into one of four categories of performance called achievement levels: Standard Exceeded (Level 4), Standard Met (Level 3), Standard Nearly Met (Level 2), and Standard Not Met (Level 1). Overall scores are reported within one of four achievement levels. Students performing at Level 3 (*standard met*) and Level 4 (*standard exceeded*) are considered on track to demonstrating the knowledge and skills necessary for college and career readiness. (Source: [CAASPP Starting Smarter](https://ca.startingsmarter.org/)).
+
+### Section 2: Riverside County Smarter Balanced Assessment Results -- Distance from Standard (DFS)
+
+The DFS is the distance between a student's score on the Smarter Balanced Summative Assessments and the Standard Met Achievement Level threshold (i.e., the lowest threshold scale score for Level 3). The scale score ranges for the Smarter Balanced Summative Assessments vary by content area---ELA and mathematics---and by grade level. To determine an aggregate DFS score, the DFS for each student is determined then divided by the number of students assessed to calculate the average DFS for all students. (Source: [CA School Dashboard Toolkit](https://www.cde.ca.gov/ta/ac/cm/documents/academicindicator22.pdf)). 
+
+The DFS is the method by which the Academic Indicator is calculated on the CA School Dashboard. The CA School Dashboard is an online tool designed to help communities access reports that display performance information for TK--12 schools and districts across the state. The Dashboard is also used in CA's System of Support to identify schools and districts that are eligible for additional support. (Source: [CA Accountability System](https://www.cde.ca.gov/ta/ac/cm/documents/academicindicator22.pdf)). Within this report, the DFS calculation does NOT apply the various accountability methodologies that will appear on the 2022 CA School Dashboard. The DFS in this report is calculated using scale scores for all students that received test results and does not include the continuous enrollment exclusions, nor take into consideration the accountability testing window. In addition, the 95 percent federal accountability testing requirement is not applied to the DFS calculation in this report. Finally, the calculation requires a sufficient n-size of at least 11 students in at least 4 grade levels in order to generate data for this report. **Groups that are excluded are likely to appear in the final dashboard calculation**, but RCOE does not have enough data to estimate the DFS with a reasonable accuracy.
+
+In the DFS section of this report, the DFS is calculated per year from 2015 to 2022 and per student group for 2019 and 2022 for ELA and Math.  The solid horizontal line on the DFS graphs represents the scale score for meeting standards (Level 3).  Dotted horizontal lines divide the “status” levels according to the Academic Indicator 5 x 5 table on the CA School Dashboard (Very High, High, Medium, Low, Very Low).  Very low is also emphasized with red shading. (Source: [Academic Indicators](https://www.cde.ca.gov/ta/ac/cm/dashboardacad.asp), [Dashboard 5x5 Table](https://www.cde.ca.gov/ta/ac/cm/fivebyfivecolortables19.asp#AcademicTable)).
+\newpage
+
+```{=tex}
+\newpage
+
+\begin{center}
+\hspace{0pt}
+\vfill
+\Huge
+Achievement Level Report
+\vfill
+\hspace{0pt}
+\end{center}
+```
+```{r ela_by_grade, message=FALSE, warning=FALSE}
+ela_by_grade <- caaspp_long %>%
+  filter(
+    year == "2022",
+    CDS == params$cds,
+    TestID == 1,
+    group == 1
+    # Grade == "All"
+  )
+plot <- plot_caaspp(ela_by_grade, Grade, NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " English Language Arts by Grade"))
+plot
+
+
+```
+
+```{r math_by_grade, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    year == "2022",
+    CDS == params$cds,
+    TestID == 2,
+    group == 1
+    # Grade == "All"
+  )
+plot <- plot_caaspp(plot_data, Grade, NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Mathematics By Grade"))
+plot
+
+
+```
+
+```{r both_by_year, message=FALSE, warning=FALSE}
+both_by_year <- caaspp_long %>%
+  filter(
+    # year == "2022",
+    CDS == params$cds,
+    # TestID == 2,
+    group == 1,
+    Grade == "All"
+  )
+plot <- plot_caaspp(both_by_year, year, expr(`Test Type`)) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " English Language Arts vs. Mathematics by Year"))
+plot
+
+
+```
+
+```{r ela_by_year_by_grade, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    # year == "2022",
+    CDS == params$cds,
+    TestID == 1,
+    group == 1,
+    Grade != "All"
+  )
+plot <- plot_caaspp(plot_data, x_axis = year, facet = expr(`Grade`)) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Grade Comparison by Year: English Language Arts"))
+plot
+
+
+```
+
+```{r math_by_year_by_grade, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    # year == "2022",
+    CDS == params$cds,
+    TestID == 2,
+    group == 1,
+    Grade != "All"
+  )
+plot <- plot_caaspp(plot_data, x_axis = year, facet = expr(`Grade`)) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Grade Comparison by Year: Mathematics"))
+plot
+
+
+```
+
+```{r ela_by_ethnicity, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    year == "2022",
+    CDS == params$cds,
+    TestID == 1,
+    group %in% race_ethnicity,
+    Grade == "All"
+  )
+plot <- plot_caaspp(plot_data, x_axis = `Demographic Name`, facet = NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Race/Ethnicity Comparison: English Language Arts"))
+plot
+```
+
+```{r math_by_ethnicity, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    year == "2022",
+    CDS == params$cds,
+    TestID == 2,
+    group %in% race_ethnicity,
+    Grade == "All"
+  )
+plot <- plot_caaspp(plot_data, x_axis = `Demographic Name`, facet = NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Race/Ethnicity Comparison: Mathematics"))
+plot
+```
+
+```{r ela_by_program, message=FALSE, warning=FALSE}
+program_order = c(
+  "All Students",
+  "Economically disadvantaged",
+  "EL (English learner)",
+  "Foster youth",
+  "Homeless",
+  "Reported disabilities",
+  "Female",
+  "Male"
+)
+
+plot_data <- caaspp_long %>%
+  filter(
+    year == "2022",
+    CDS == params$cds,
+    TestID == 1,
+    group %in% program,
+    Grade == "All"
+  ) %>%
+  mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+plot <- plot_caaspp(plot_data, x_axis = `Demographic Name`, facet = NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Program Comparison: English Language Arts"))
+plot
+```
+
+```{r math_by_program, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    year == "2022",
+    CDS == params$cds,
+    TestID == 2,
+    group %in% program,
+    Grade == "All"
+  ) %>%
+  mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+plot <- plot_caaspp(plot_data, x_axis = `Demographic Name`, facet = NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Program Comparison: Mathematics"))
+plot
+```
+
+```{r cohort_progress_ela, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    # year == "2022",
+    cohort %in% c("Class of 2023","Class of 2026", "Class of 2027", "Class of 2028"),
+    CDS == params$cds,
+    TestID == 1,
+    group == 1,
+    # Grade == "All"
+  ) %>%
+  mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+plot <- plot_caaspp(plot_data, x_axis = Grade, facet = expr(cohort)) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Cohort Progress: English Language Arts"))
+plot
+```
+
+```{r cohort_progress_math, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    # year == "2022",
+    cohort %in% c("Class of 2023","Class of 2026", "Class of 2027", "Class of 2028"),
+    CDS == params$cds,
+    TestID == 2,
+    group == 1,
+    # Grade == "All"
+  ) %>%
+  mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+plot <- plot_caaspp(plot_data, x_axis = Grade, facet = expr(cohort)) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Cohort Progress: Mathematics"))
+plot
+```
+
+```{=tex}
+\newpage
+
+\begin{center}
+\hspace{0pt}
+\vfill
+\Huge
+Distance from Standard Report
+\vfill
+\hspace{0pt}
+\end{center}
+```
+```{r ela_dfs_by_year, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    # year == "2022",
+    CDS == params$cds,
+    TestID == 1,
+    group == 1,
+  )
+plot <- plot_dfs(plot_data, x_axis = `year`, test_id = 1) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " CAASPP DFS Over Time: English Language Arts")) +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = rep("grey50", times = 100))
+plot
+```
+
+```{r math_dfs_by_year, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    # year == "2022",
+    CDS == params$cds,
+    TestID == 2,
+    group == 1,
+  )
+plot <- plot_dfs(plot_data, x_axis = `year`, test_id = 2) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " CAASPP DFS Over Time: Mathematics")) +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = rep("grey50", times = 100))
+plot
+```
+
+```{r ela_dfs_by_ethnicity, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    year %in% c("2019", "2022"),
+    CDS == params$cds,
+    TestID == 1,
+    group %in% race_ethnicity
+  )
+plot <- plot_dfs(plot_data, x_axis = `Demographic Name`, test_id = 1) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Race/Ethnicity Distance from Standard: English Language Arts"))
+plot
+```
+
+```{r math_dfs_by_ethnicity, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    year %in% c("2019", "2022"),
+    CDS == params$cds,
+    TestID == 2,
+    group %in% race_ethnicity
+  )
+plot <- plot_dfs(plot_data, x_axis = `Demographic Name`, test_id = 2) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Race/Ethnicity Distance from Standard: Mathematics"))
+plot
+```
+
+```{r ela_dfs_by_program, message=FALSE, warning=FALSE}
+program_order = c(
+  "All Students",
+  "Economically disadvantaged",
+  "EL (English learner)",
+  "Foster youth",
+  "Homeless",
+  "Reported disabilities",
+  "Female",
+  "Male"
+)
+
+plot_data <- caaspp_dfs %>%
+  filter(
+    year %in% c("2019", "2022"),
+    CDS == params$cds,
+    TestID == 1,
+    group %in% program
+  ) %>%
+  mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+plot <- plot_dfs(plot_data, x_axis = `Demographic Name`, test_id = 1) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Program Distance from Standard: English Language Arts"))
+plot
+```
+
+```{r math_dfs_by_program, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    year %in% c("2019", "2022"),
+    CDS == params$cds,
+    TestID == 2,
+    group %in% program
+  ) %>%
+  mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+plot <- plot_dfs(plot_data, x_axis = `Demographic Name`, test_id = 2) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Program Distance from Standard: Mathematics"))
+plot
+```
+
+`r if(!params$include_others) {"\\begin{comment}"}`
+
+\newpage
+
+\begin{center}
+\hspace{0pt}
+\vfill
+\Huge
+Miscellaneous Visualizations ONLY for RCOE Internal Review
+
+DO NOT DISTRIBUTE
+\vfill
+\hspace{0pt}
+\end{center}
+\newpage
+
+
+```{r ela_by_district, message=FALSE, warning=FALSE}
+ela_by_grade <- caaspp_long %>%
+  filter(
+    year == "2022",
+    # CDS == params$cds,
+    TestID == 1,
+    group == 1,
+    Grade == "All"
+  )
+ela_by_grade_filtered <- ela_by_grade %>%
+  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+         district != "Riverside County")
+plot <- plot_caaspp(ela_by_grade_filtered, district, NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Riverside County English Language Arts by District")
+plot
+
+
+```
+
+```{r math_by_district, message=FALSE, warning=FALSE}
+plot_data <- caaspp_long %>%
+  filter(
+    year == "2022",
+    # CDS == params$cds,
+    TestID == 2,
+    group == 1,
+    Grade == "All"
+  ) %>%
+  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+         district != "Riverside County")
+plot <- plot_caaspp(plot_data, district, NULL) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Riverside County Mathematics By Grade")
+plot
+
+
+```
+
+```{r ela_dfs_by_district, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    year == "2022",
+    # CDS == params$cds,
+    TestID == 1,
+    group == 1,
+  ) %>%
+  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+         district != "Riverside County")
+plot <- plot_dfs(plot_data, x_axis = `district`, test_id = 1) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "CAASPP DFS by District: English Language Arts")
+plot
+```
+
+```{r math_dfs_by_district, message=FALSE, warning=FALSE}
+plot_data <- caaspp_dfs %>%
+  filter(
+    year == "2022",
+    # CDS == params$cds,
+    TestID == 2,
+    group == 1,
+  ) %>%
+  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+         district != "Riverside County")
+  
+plot <- plot_dfs(plot_data, x_axis = `district`, test_id = 2) +
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "CAASPP DFS by District: Mathematics")
+plot
+```
+
+```{r five_ela, message=FALSE, warning=FALSE}
+five_data <- caaspp_dfs %>%
+  filter(
+    CDS == params$cds,
+    year == "2022",
+    TestID == 1
+  )
+five_plot <- plot_5x5(five_data, grid = "ela")+
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Five-by-Five Grid of 2022 DFS Change from 2019 Status: English Language Arts")
+five_plot
+```
+
+```{r five_math, message=FALSE, warning=FALSE}
+five_data <- caaspp_dfs %>%
+  filter(
+    CDS == params$cds,
+    year == "2022",
+    TestID == 2
+  )
+five_plot <- plot_5x5(five_data, grid = "math")+
+  ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Five-by-Five Grid of 2022 Change from 2019 Status: Mathematics")
+five_plot
+```
+
+`r if(!params$include_others) {"\\end{comment}"}`
