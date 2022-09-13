@@ -2,9 +2,9 @@
 title: "`r params$dist_name` CAASPP 2022 Private Preview Report"
 output:
   pdf_document: null
+  word_document: default
   html_document:
     df_print: paged
-  word_document: default
 header-includes:
 - \renewcommand{\familydefault}{\sfdefault}
 - \usepackage{fancyhdr}
@@ -25,27 +25,29 @@ params:
   dist_name: "Riverside County"
   include_others: TRUE
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,fig.width=9, fig.height=6.5, dpi=300)
-load('caaspp_long.RData')
-load('caaspp_dfs.RData')
-load('cut_scores.RData')
-load('plot_caaspp.Rdata')
-load('plot_dfs.Rdata')
-load('plot_5x5.Rdata')
-load('race_ethnicity.Rdata')
-load('program.Rdata')
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.width=9, fig.height=6.5, dpi=300)
+
+curr_county <- substr(params$cds,1,2)
+
+load(paste0('cache/caaspp_long_', curr_county, ".Rdata"))
+caaspp_long <- curr_caaspp_long
+load('cache/caaspp_dfs.RData')
+load('cache/cut_scores.RData')
+load('cache/plot_caaspp.Rdata')
+load('cache/plot_dfs.Rdata')
+load('cache/plot_5x5.Rdata')
+load('cache/race_ethnicity.Rdata')
+load('cache/program.Rdata')
 
 library(tidyverse)
 library(ggplot2)
 library(ggthemes)
 library(ggrepel)
 
-
-
 ```
 
-```{r title_page, out.height = "200px"}
+```{r title_page}
 
 ```
 
@@ -57,14 +59,18 @@ library(ggrepel)
 \LARGE
 Prepared by the Riverside County Office of Education
 
-This report is based upon embargoed data, and should not be shared publicly.
+\large This report is based upon embargoed data, and should not be shared publicly except by the LEA for whom the data is generated.
 
 `r format(Sys.time(), "%m/%d/%Y")`
 \end{center}
-```
+
+
+
+
+
 \newpage
 \small
-
+```
 # California Assessment of Student Performance and Progress (CAASPP)
 
 The CAASPP System was established on January 1, 2014. The primary purpose of the CAASPP System is to assist teachers, administrators, students, and parents by promoting high-quality teaching and learning through the use of a variety of assessment approaches and item types. The CAASPP System encompasses the following assessments and student participation requirements.
@@ -96,12 +102,11 @@ Based on their scale scores, students fall into one of four categories of perfor
 
 ### Section 2: Riverside County Smarter Balanced Assessment Results -- Distance from Standard (DFS)
 
-The DFS is the distance between a student's score on the Smarter Balanced Summative Assessments and the Standard Met Achievement Level threshold (i.e., the lowest threshold scale score for Level 3). The scale score ranges for the Smarter Balanced Summative Assessments vary by content area---ELA and mathematics---and by grade level. To determine an aggregate DFS score, the DFS for each student is determined then divided by the number of students assessed to calculate the average DFS for all students. (Source: [CA School Dashboard Toolkit](https://www.cde.ca.gov/ta/ac/cm/documents/academicindicator22.pdf)). 
+The DFS is the distance between a student's score on the Smarter Balanced Summative Assessments and the Standard Met Achievement Level threshold (i.e., the lowest threshold scale score for Level 3). The scale score ranges for the Smarter Balanced Summative Assessments vary by content area---ELA and mathematics---and by grade level. To determine an aggregate DFS score, the DFS for each student is determined then divided by the number of students assessed to calculate the average DFS for all students. (Source: [CA School Dashboard Toolkit](https://www.cde.ca.gov/ta/ac/cm/documents/academicindicator22.pdf)).
 
-The DFS is the method by which the Academic Indicator is calculated on the CA School Dashboard. The CA School Dashboard is an online tool designed to help communities access reports that display performance information for TK--12 schools and districts across the state. The Dashboard is also used in CA's System of Support to identify schools and districts that are eligible for additional support. (Source: [CA Accountability System](https://www.cde.ca.gov/ta/ac/cm/documents/academicindicator22.pdf)). Within this report, the DFS calculation does NOT apply the various accountability methodologies that will appear on the 2022 CA School Dashboard. The DFS in this report is calculated using scale scores for all students that received test results and does not include the continuous enrollment exclusions, nor take into consideration the accountability testing window. In addition, the 95 percent federal accountability testing requirement is not applied to the DFS calculation in this report. Finally, the calculation requires a sufficient n-size of at least 11 students in at least 4 grade levels in order to generate data for this report. **Groups that are excluded are likely to appear in the final dashboard calculation**, but RCOE does not have enough data to estimate the DFS with a reasonable accuracy.
+The DFS is the method by which the Academic Indicator is calculated on the CA School Dashboard. The CA School Dashboard is an online tool designed to help communities access reports that display performance information for TK--12 schools and districts across the state. The Dashboard is also used in CA's System of Support to identify schools and districts that are eligible for additional support. (Source: [CA Accountability System](https://www.cde.ca.gov/ta/ac/cm/documents/academicindicator22.pdf)). Within this report, the DFS calculation does NOT apply the various accountability methodologies that will appear on the 2022 CA School Dashboard. The DFS in this report is calculated using scale scores for all students that received test results and does not include the continuous enrollment exclusions, nor take into consideration the accountability testing window. In addition, the 95 percent federal accountability testing requirement is not applied to the DFS calculation in this report. This report also does not take into account the English Learner accountability group's inclusion of REFPs for four years after reclassification. Finally, the calculation requires a sufficient n-size of at least 11 students in at least 4 grade levels in order to generate data for this report. **Groups that are excluded are likely to appear in the final dashboard calculation**, but RCOE does not have enough data to estimate the DFS with a reasonable accuracy. 
 
-In the DFS section of this report, the DFS is calculated per year from 2015 to 2022 and per student group for 2019 and 2022 for ELA and Math.  The solid horizontal line on the DFS graphs represents the scale score for meeting standards (Level 3).  Dotted horizontal lines divide the “status” levels according to the Academic Indicator 5 x 5 table on the CA School Dashboard (Very High, High, Medium, Low, Very Low).  Very low is also emphasized with red shading. (Source: [Academic Indicators](https://www.cde.ca.gov/ta/ac/cm/dashboardacad.asp), [Dashboard 5x5 Table](https://www.cde.ca.gov/ta/ac/cm/fivebyfivecolortables19.asp#AcademicTable)).
-\newpage
+In the DFS section of this report, the DFS is calculated per year from 2015 to 2022 and per student group for 2019 and 2022 for ELA and Math. The solid horizontal line on the DFS graphs represents the scale score for meeting standards (Level 3). Dotted horizontal lines divide the "status" levels according to the Academic Indicator 5 x 5 table on the CA School Dashboard (Very High, High, Medium, Low, Very Low). Very low is also emphasized with red shading. (Source: [Academic Indicators](https://www.cde.ca.gov/ta/ac/cm/dashboardacad.asp), [Dashboard 5x5 Table](https://www.cde.ca.gov/ta/ac/cm/fivebyfivecolortables19.asp#AcademicTable)). \newpage
 
 ```{=tex}
 \newpage
@@ -115,7 +120,8 @@ Achievement Level Report
 \hspace{0pt}
 \end{center}
 ```
-```{r ela_by_grade, message=FALSE, warning=FALSE}
+
+```{r ela_by_grade, message=FALSE, warning=FALSE, echo = FALSE, results='hide'}
 ela_by_grade <- caaspp_long %>%
   filter(
     year == "2022",
@@ -124,14 +130,19 @@ ela_by_grade <- caaspp_long %>%
     group == 1
     # Grade == "All"
   )
+if(nrow(ela_by_grade) == 0 | is.na(nrow(ela_by_grade))) {
+ knitr::knit_exit()
+} else if (nrow(ela_by_grade) == 8) {
+ 
+} else {
 plot <- plot_caaspp(ela_by_grade, Grade, NULL) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " English Language Arts by Grade"))
 plot
-
+}
 
 ```
 
-```{r math_by_grade, message=FALSE, warning=FALSE}
+```{r math_by_grade, message=FALSE, warning=FALSE, echo = FALSE, results='hide'}
 plot_data <- caaspp_long %>%
   filter(
     year == "2022",
@@ -140,10 +151,13 @@ plot_data <- caaspp_long %>%
     group == 1
     # Grade == "All"
   )
+if (nrow(plot_data) == 8) {
+
+} else {
 plot <- plot_caaspp(plot_data, Grade, NULL) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Mathematics By Grade"))
 plot
-
+}
 
 ```
 
@@ -163,7 +177,7 @@ plot
 
 ```
 
-```{r ela_by_year_by_grade, message=FALSE, warning=FALSE}
+```{r ela_by_year_by_grade, message=FALSE, warning=FALSE, echo = FALSE, results='hide'}
 plot_data <- caaspp_long %>%
   filter(
     # year == "2022",
@@ -172,14 +186,17 @@ plot_data <- caaspp_long %>%
     group == 1,
     Grade != "All"
   )
+if (nrow(plot_data) <= 24) {
+
+} else {
 plot <- plot_caaspp(plot_data, x_axis = year, facet = expr(`Grade`)) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Grade Comparison by Year: English Language Arts"))
 plot
-
+}
 
 ```
 
-```{r math_by_year_by_grade, message=FALSE, warning=FALSE}
+```{r math_by_year_by_grade, message=FALSE, warning=FALSE, echo = FALSE, results='hide'}
 plot_data <- caaspp_long %>%
   filter(
     # year == "2022",
@@ -188,10 +205,13 @@ plot_data <- caaspp_long %>%
     group == 1,
     Grade != "All"
   )
+if (nrow(plot_data) <= 24) {
+  print("")  
+} else {
 plot <- plot_caaspp(plot_data, x_axis = year, facet = expr(`Grade`)) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Grade Comparison by Year: Mathematics"))
 plot
-
+}
 
 ```
 
@@ -264,7 +284,7 @@ plot <- plot_caaspp(plot_data, x_axis = `Demographic Name`, facet = NULL) +
 plot
 ```
 
-```{r cohort_progress_ela, message=FALSE, warning=FALSE}
+```{r cohort_progress_ela, message=FALSE, warning=FALSE, results='hide'}
 plot_data <- caaspp_long %>%
   filter(
     # year == "2022",
@@ -275,12 +295,16 @@ plot_data <- caaspp_long %>%
     # Grade == "All"
   ) %>%
   mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+if (nrow(plot_data) <= 4) {
+  
+} else {
 plot <- plot_caaspp(plot_data, x_axis = Grade, facet = expr(cohort)) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Cohort Progress: English Language Arts"))
 plot
+}
 ```
 
-```{r cohort_progress_math, message=FALSE, warning=FALSE}
+```{r cohort_progress_math, message=FALSE, warning=FALSE, results='hide'}
 plot_data <- caaspp_long %>%
   filter(
     # year == "2022",
@@ -291,9 +315,13 @@ plot_data <- caaspp_long %>%
     # Grade == "All"
   ) %>%
   mutate(`Demographic Name` = factor(`Demographic Name`, levels = program_order))
+if (nrow(plot_data) <= 4) {
+  
+} else {
 plot <- plot_caaspp(plot_data, x_axis = Grade, facet = expr(cohort)) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = paste0(params$dist_name, " Student Cohort Progress: Mathematics"))
 plot
+}
 ```
 
 ```{=tex}
@@ -407,6 +435,7 @@ plot
 
 \newpage
 
+```{=tex}
 \begin{center}
 \hspace{0pt}
 \vfill
@@ -418,8 +447,7 @@ DO NOT DISTRIBUTE
 \hspace{0pt}
 \end{center}
 \newpage
-
-
+```
 ```{r ela_by_district, message=FALSE, warning=FALSE}
 ela_by_grade <- caaspp_long %>%
   filter(
@@ -430,7 +458,9 @@ ela_by_grade <- caaspp_long %>%
     Grade == "All"
   )
 ela_by_grade_filtered <- ela_by_grade %>%
-  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+  filter(substr(CDS, 1,2) == "33",
+         substr(CDS, 8, 14) == "0000000",
+         district != "California School for the Deaf-Riverside (State Special Schl)",
          district != "Riverside County")
 plot <- plot_caaspp(ela_by_grade_filtered, district, NULL) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Riverside County English Language Arts by District")
@@ -448,7 +478,9 @@ plot_data <- caaspp_long %>%
     group == 1,
     Grade == "All"
   ) %>%
-  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+  filter(substr(CDS, 1,2) == "33",
+         substr(CDS, 8, 14) == "0000000",
+         district != "California School for the Deaf-Riverside (State Special Schl)",
          district != "Riverside County")
 plot <- plot_caaspp(plot_data, district, NULL) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Riverside County Mathematics By Grade")
@@ -465,7 +497,9 @@ plot_data <- caaspp_dfs %>%
     TestID == 1,
     group == 1,
   ) %>%
-  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+  filter(substr(CDS, 1,2) == "33",
+         substr(CDS, 8, 14) == "0000000",
+         district != "California School for the Deaf-Riverside (State Special Schl)",
          district != "Riverside County")
 plot <- plot_dfs(plot_data, x_axis = `district`, test_id = 1) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "CAASPP DFS by District: English Language Arts")
@@ -480,7 +514,9 @@ plot_data <- caaspp_dfs %>%
     TestID == 2,
     group == 1,
   ) %>%
-  filter(district != "California School for the Deaf-Riverside (State Special Schl)",
+  filter(substr(CDS, 1,2) == "33",
+         substr(CDS, 8, 14) == "0000000",
+         district != "California School for the Deaf-Riverside (State Special Schl)",
          district != "Riverside County")
   
 plot <- plot_dfs(plot_data, x_axis = `district`, test_id = 2) +

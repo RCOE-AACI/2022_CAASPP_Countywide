@@ -31,6 +31,8 @@ vignettes/*.pdf
 # knitr and R markdown default cache directories
 *_cache/
 /cache/
+/Districts/
+/Schools/
 
 # Temporary files created by R markdown
 *.utf8.md
@@ -53,6 +55,8 @@ rsconnect/
 
 # Report output
 *.pdf
+*.html
+*.docx
 
 # Cached data
 *.Rdata
@@ -60,3 +64,5 @@ rsconnect/
 # 2022 Embargoed data
 *2022*.txt
 sb*.txt
+.sync*
+.DS_Store

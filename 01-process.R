@@ -3,55 +3,54 @@ library(ggthemes)
 library(ggrepel)
 
 c2015 <- read_csv("data/sb_ca2015_all_csv_v3.txt", 
-                  na = "*", 
+                  na = c("","*"), 
                   col_types = cols(
-                    `County Code` = col_character()
+                    `County Code` = col_character(),
+                    Filler = col_character()
                     )
-                  ) %>%
-  filter(`County Code` == "33", `School Code` == "0000000")
+                  ) 
 
 c2016 <- read_csv("data/sb_ca2016_all_csv_v3.txt", 
-                  na = "*", 
+                  na = c("","*"), 
                   col_types = cols(
-                    `County Code` = col_character()
+                    `County Code` = col_character(),
+                    Filler = col_character()
                     )
-                  ) %>%
-  filter(`County Code` == "33", `School Code` == "0000000")
+                  ) 
 
 c2017 <- read_csv("data/sb_ca2017_all_csv_v2.txt", 
-                  na = "*", 
+                  na = c("","*"), 
                   col_types = cols(
-                    `County Code` = col_character()
+                    `County Code` = col_character(),
+                    Filler = col_character()
                     )
-                  ) %>%
-  filter(`County Code` == "33", `School Code` == "0000000")
+                  ) 
 
-c2018 <- read_csv("data/sb_ca2018_all_33_csv_v3.txt", 
-                  na = "*", 
+c2018 <- read_csv("data/sb_ca2018_all_csv_v3.txt", 
+                  na = c("","*"), 
                   col_types = cols(
-                    `County Code` = col_character()
+                    `County Code` = col_character(),
+                    Filler = col_character()
                     )
-                  ) %>%
-  filter(`School Code` == "0000000")
+                  ) 
 
-c2019 <- read_csv("data/sb_ca2019_all_33_csv_v4.txt",
-                  na = "*", 
+c2019 <- read_csv("data/sb_ca2019_all_csv_v4.txt",
+                  na = c("","*"), 
                   col_types = cols(
-                    `County Code` = col_character()
+                    `County Code` = col_character(),
+                    Filler = col_character()
                     )
-                  ) %>%
-  filter(`School Code` == "0000000")
+                  ) 
 
 c2022 <- read_delim("data/sb_ca2022_all_csv_v1.txt", 
-                    na = "*", delim = "^"
+                    na = c("","*"), 
+                    delim = "^"
                     ) %>%
   rename("Subgroup ID" = "Student Group ID",
-         "Test Id" = "Test ID") %>%
-  filter(`County Code` == "33", `School Code` == "0000000")
+         "Test Id" = "Test ID") 
 
-districts <- read_delim('https://www.cde.ca.gov/schooldirectory/report?rid=dl2&tp=txt') %>%
-  mutate(CDS = paste0(`CD Code`, "0000000")) %>%
-  select(CDS, district = District, DOC, DOCType) %>%
+entities <- read_delim('https://www.cde.ca.gov/schooldirectory/report?rid=dl1&tp=txt') %>%
+  select(CDS = CDSCode, district = District, school = School, DOC, DOCType, SOC, SOCType) %>%
   mutate(
     district = gsub("\\s*\\w*$", "", district),
     district = gsub("of$", "of Education", district)
@@ -107,7 +106,7 @@ caaspp <- bind_rows(c2015, c2016, c2017, c2018, c2019, c2022) %>%
     `Mean Scale Score`,
     n = `Students with Scores`
   ) %>%
-  left_join(districts) %>%
+  left_join(entities) %>%
   inner_join(focus_groups) %>%
   left_join(test_id) %>%
   mutate(
@@ -118,9 +117,9 @@ caaspp <- bind_rows(c2015, c2016, c2017, c2018, c2019, c2022) %>%
     Grade = if_else(Grade == "13", "All", Grade),
     district = 
       case_when(
-    district == "Riverside County Office of Education" ~ "RCOE", 
-    is.na(district) ~ "Riverside County",
-    TRUE ~ district)
+        district == "Riverside County Office of Education" ~ "RCOE", 
+        CDS == "33000000000000" ~ "Riverside County",
+        TRUE ~ district)
   )
 
 caaspp_long <- caaspp %>%
@@ -186,7 +185,7 @@ caaspp_dfs <- caaspp_long %>%
   select(-Level, -Percent) %>%
   filter(!is.na(`Mean Scale Score`)) %>%
   unique() %>%
-  group_by(CDS, year, district, DOC, `Demographic Name`, `Student Group`, `Test Type`, group, short_group, TestID) %>%
+  group_by(CDS, year, school, `Demographic Name`, `Student Group`, `Test Type`, group, short_group, TestID) %>%
   left_join(final_targets) %>%
   mutate(dfs = `Mean Scale Score` - ss_target,
          weighted_dfs = dfs * n) %>%
@@ -201,19 +200,35 @@ caaspp_dfs <- caaspp_long %>%
 
 prev_caasspp <- caaspp_dfs %>% select(prev_year = year, prev_dfs = dfs, CDS, group, TestID) %>% filter(!is.na(prev_year))
   
-caaspp_dfs <- caaspp_dfs %>%
+caaspp_dfs2 <- caaspp_dfs %>%
   left_join(prev_caasspp) %>%
   mutate(change = dfs - prev_dfs) %>%
-  mutate(dfs = if_else(grade_levels_included >= 4, dfs, NA_real_))
+  mutate(dfs = if_else(
+    grade_levels_included >= 4 | !(is.na(school) | school == "No data"), 
+    dfs, 
+    NA_real_)) 
 
+caaspp_dfs3 <- caaspp_dfs2 %>%
+  left_join(entities) %>%
+  mutate(
+    district = 
+      case_when(
+        district == "Riverside County Office of Education" ~ "RCOE", 
+        CDS == "33000000000000" ~ "Riverside County",
+        TRUE ~ district)
+  )
+
+caaspp_dfs <- caaspp_dfs3
 
 # The KEY function for plotting dfs
 
 
 plot_dfs <- function(data, x_axis, test_id, dodge) {
+  # Completes the grouping to allow for blank columns
   if(deparse(substitute(x_axis)) != "year") {
     data <- data %>% complete({{x_axis}}, year)
   }
+  # Wraps the text for column titles if longer than 15 characters
   if(is.factor(data %>% pull({{x_axis}}))) {  
     x_axis_levels <- levels(data %>% pull({{x_axis}}))
     wrapped_levels <- str_wrap(x_axis_levels, width = 15)
@@ -223,12 +238,26 @@ plot_dfs <- function(data, x_axis, test_id, dodge) {
     data <- data %>%
       mutate("{{x_axis}}" := str_wrap({{x_axis}}, width = 15))
   }
-    plot <- ggplot(data, aes(x={{x_axis}},y=dfs, fill = year))
   
+  # Start the plot  
+  plot <- ggplot(data, aes(x={{x_axis}}, y=dfs, fill = year))
+
+  # Determine if HS cutpoints needed for DFS
+  SOC = data[1,] %>% pull(SOC)
   DOC = data[1,] %>% pull(DOC)
   
-  hs_cutpoints = if_else(is.na(DOC) | DOC != 56, FALSE, TRUE)
+  # DOC 56 = High school district, SOC 66,67,68 are high schools
+  if (SOC == "No Data" | is.na(SOC)) {
+    hs_cutpoints = if_else(is.na(DOC) | DOC != 56, FALSE, TRUE)
+  } else {
+    hs_cutpoints = if_else(
+      SOC %in% c(66, 67, 68),
+      TRUE,
+      FALSE
+    )
+  }
   
+  # Add cut points for levels
   if(test_id == 1 & hs_cutpoints == FALSE) {
     plot <- plot + 
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax=-70 , fill = "red", alpha = 0.5) +
@@ -259,33 +288,34 @@ plot_dfs <- function(data, x_axis, test_id, dodge) {
       geom_hline(yintercept = -115, linetype = "longdash", alpha = 0.3) 
   }
   
+  # Final plot function
   plot <- plot +  
-      geom_col(position = position_dodge(preserve = "single")) +
-      geom_text(aes(y = dfs + (sign(dfs) * 4), label = round(dfs,1)), size = 3, position = position_dodge(width = .9))+
-      scale_fill_economist() +
-      theme_few() +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+      geom_col(position = position_dodge(preserve = "single")) + # Make a column plot
+      geom_text(aes(y = dfs + (sign(dfs) * 4), label = round(dfs,1)), size = 3, position = position_dodge(width = .9))+ # Adds the labels
+      scale_fill_economist() + # Use the economist color theme
+      theme_few() + # Make things more minimalistic theme wise
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + 
       geom_hline(yintercept = 0) +
     labs(caption = "Note: Groups may be suppressed due to grade level n-size that will have data on the Fall 2022 CA School Dashboard")
   return(plot)
 }
 
 #
-plot_data <- caaspp_dfs %>%
+plot_data <- caaspp_dfs3 %>%
   filter(
     year %in% c("2019", "2022"),
-    CDS == "33669850000000",
-    TestID == 2,
+    CDS == "33671813335759",
+    TestID == 1,
     group %in% program
   )
 plot <- plot_dfs(plot_data, x_axis = `Demographic Name`, test_id = 1) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Student Race/Ethnicity Distance from Standard: English Language Arts")
 plot
 
-plot_data <- caaspp_dfs %>%
+plot_data <- caaspp_dfs3 %>%
   filter(
     # year == "2022",
-    CDS == "33000000000000",
+    CDS == "33671813335759",
     TestID == 1,
     group == 1,
   )
@@ -303,6 +333,7 @@ plot_caaspp <- function(
   # Define the plot colors
   colors = c("#33ADD8", "#91CD69", "#DFE553","#F9AD86" )
   
+  # Wrap the legend text
   if(is.factor(data %>% pull({{x_axis}}))) {  
     x_axis_levels <- levels(data %>% pull({{x_axis}}))
     wrapped_levels <- str_wrap(x_axis_levels, width = 20)
@@ -313,7 +344,6 @@ plot_caaspp <- function(
       mutate("{{x_axis}}" := str_wrap({{x_axis}}, width = 20))
   }
   # Calculate the percent proficient by group
-  
   
   if(!is.null(facet)) {
     
@@ -397,15 +427,25 @@ five_plot <- plot_5x5(five_data, grid = "ela")
 five_plot
 
 # Save the resulting files
+## This saves datasets only
+for (i in 1:58) {
+  county_code <- str_pad(i, 2, pad = "0")
+  curr_caaspp_long <- caaspp_long %>%
+    filter(substr(CDS,1,2) == county_code)
+  save(curr_caaspp_long, file = paste0('cache/caaspp_long_',county_code,'.Rdata'))
+}
+save(caaspp_long, file = 'cache/caaspp_long.Rdata')
+save(caaspp_dfs, file = 'cache/caaspp_dfs.Rdata')
+save(cut_scores, file = 'cache/cut_scores.Rdata')
+save(race_ethnicity, file = "cache/race_ethnicity.Rdata")
+save(program, file = "cache/program.Rdata")
+save(entities, file = "cache/entities.Rdata")
 
-save(caaspp_long, file = 'caaspp_long.Rdata')
-save(caaspp_dfs, file = 'caaspp_dfs.Rdata')
-save(cut_scores, file = 'cut_scores.Rdata')
-save(plot_dfs, file = "plot_dfs.Rdata")
-save(plot_5x5, file = "plot_5x5.Rdata")
-save(plot_caaspp, file = "plot_caaspp.Rdata")
-save(race_ethnicity, file = "race_ethnicity.Rdata")
-save(program, file = "program.Rdata")
+## Also save the R functions that are way too long
+save(plot_dfs, file = "cache/plot_dfs.Rdata")
+save(plot_5x5, file = "cache/plot_5x5.Rdata")
+save(plot_caaspp, file = "cache/plot_caaspp.Rdata")
+
 
 # Test it!
 
@@ -433,3 +473,4 @@ plot_data <- caaspp_long %>%
 plot <- plot_caaspp(plot_data, x_axis = `Demographic Name`, facet = NULL) +
   ggtitle("2022 Smarter Balanced Assessment Results", subtitle = "Student Race/Ethnicity Comparison: English Language Arts")
 plot
+
